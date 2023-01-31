@@ -13,6 +13,8 @@ import (
 
 func main() {
 	arguments := os.Args
+
+	// when no address/hostname is specified
 	if len(arguments) == 1 {
 		fmt.Println("Please provide a server address")
 		return
@@ -54,9 +56,13 @@ func main() {
 		}
 		if message == "exit!" {
 			fmt.Println("Closing connection to server")
-			conn.Close()
+			defer conn.Close()
 			break
 		}
 		fmt.Print(time.Now().Format("15:04:05"), " You > ", message)
 	}
 }
+
+// function to receive and display messages from the server/other clients
+
+// further functions for switching debugging modes is wanted
