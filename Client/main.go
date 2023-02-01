@@ -16,7 +16,7 @@ func main() {
 
 	// when no address/hostname is specified
 	if len(arguments) == 1 {
-		fmt.Println("Please provide a server address")
+		fmt.Println("Please provide a server address/hostname")
 		return
 	}
 
@@ -27,8 +27,7 @@ func main() {
 	}
 	defer conn.Close()
 
-	// username := conn.LocalAddr().String()
-	fmt.Println("Connected to the chat server. Type messages and press Enter to send.")
+	fmt.Println("Connected to the chat server:", arguments[1], "Type messages and press Enter to send.")
 
 	go func() {
 		for {
@@ -54,7 +53,7 @@ func main() {
 			fmt.Println("Error:", err)
 			break
 		}
-		if message == "exit!" {
+		if message == "exit!\n" {
 			fmt.Println("Closing connection to server")
 			defer conn.Close()
 			break
