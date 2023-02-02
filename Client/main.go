@@ -33,6 +33,7 @@ func main() {
 	fmt.Println("Connected to the chat server:", arguments[1], "Type messages and press Enter to send.")
 
 	numlines := 0
+
 	for {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("You > ")
@@ -44,24 +45,28 @@ func main() {
 
 		message := currentTime + ":" + text
 
+		if text == "\n" {
+			break
+		}
+
 		// command "exit!" to close connection from the server
-		if text == "exit!\n" {
+		if text == "exit!" {
 			fmt.Println("Closing connection to server")
-			conn.Close()
+			defer conn.Close()
 			break
-		}
+		} else {
+			fmt.Print("\033[A")  // move cursor up
+			fmt.Print("\033[2K") // clear current line
+			// fmt.Print("\033[A")  // move cursor up
+			// fmt.Print("\033[2K") // clear current line
+			_, err := conn.Write([]byte(message + "\n"))
+			if err != nil {
+				fmt.Println("Connection closed")
+				break
+			}
+			fmt.Println(currentTime, " You > ", text)
 
-		fmt.Print("\033[A")  // move cursor up
-		fmt.Print("\033[2K") // clear current line
-		// fmt.Print("\033[A")  // move cursor up
-		// fmt.Print("\033[2K") // clear current line
-
-		_, err := conn.Write([]byte(message + "\n"))
-		if err != nil {
-			fmt.Println("Connection closed")
-			break
 		}
-		fmt.Println(currentTime, " You > ", text)
 
 		// cleaning the UI
 		if numlines >= displayLimit {

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net"
 	"strings"
-	"time"
 )
 
 func main() {
@@ -37,13 +36,23 @@ func handleConnection(conn net.Conn) {
 	connections = append(connections, conn)
 	fmt.Println("### Accepted connection from", username)
 	for {
-		message, err := bufio.NewReader(conn).ReadString('\n')
+		full_message, err := bufio.NewReader(conn).ReadString('\n')
+
+		// split and assign fisrt 8 letters for timestamp, and the message
+		// currently used format for time: HH:MM:SS
+
+		// add if statements to handle length errors
+		// current error for full_message not having sufficient length panic: runtime error: index out of range [1] with length 1
+		splitMessage := strings.SplitAfterN(full_message, ":", 4)
+		timeinfo := splitMessage[0] + ":" + splitMessage[1] + ":" + splitMessage[2]
+		message := splitMessage[3]
+
 		if err != nil {
 			fmt.Println("### Closed connection from", username)
 			break
 		}
 		message = strings.TrimSpace(message)
-		fmt.Println(username, "at", time.Now().Format("15:04:05"), ">", message)
+		fmt.Println(username, "at", timeinfo, ">", message)
 		for _, connection := range connections {
 			if connection != conn {
 				connection.Write([]byte(username + " > " + message + "\n"))
